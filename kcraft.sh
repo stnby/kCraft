@@ -20,7 +20,7 @@
 # SOFTWARE.
 
 auth_player_name='Stnby'
-game_directory=~/.bybis
+game_directory=~/.minecraft
 
 launcher_name='java-minecraft-launcher' # Ha except it's POSIX Shell...
 launcher_version='1.6.84-j'
