@@ -61,7 +61,7 @@ case "$1" in
                 "echo \"Downloading: 'assets/indexes/${assets_index_name}.json'\"; curl --create-dirs -C- -#o \"${assets_root}/indexes/${assets_index_name}.json\" \$0"
         jq '.objects[].hash' "${assets_root}/indexes/${assets_index_name}.json" \
             | xargs -n1 sh -c "printf 'https://resources.download.minecraft.net/%.2s/%s\n\tout=%.2s/%s\n' \$0 \$0 \$0 \$0" \
-                    | aria2c -i- -x16 -c -d "${assets_root}/objects"
+            | aria2c -i- -x16 -c -d "${assets_root}/objects"
         ;;
     get-libs) # Downloads libraries requiered for the client.
         version_name="$2"
@@ -69,7 +69,7 @@ case "$1" in
         jq '.libraries[].downloads[] | if has("natives-linux") then ."natives-linux" else if has("url") then . else empty end end | .path, .url' \
             "${versions_root}/${version_name}/${version_name}.json" \
                 | xargs -n2 sh -c "printf '%s\n\tout=%s\n' \$1 \$0" \
-                    | aria2c -i- -x16 -c -d ${libraries_root}
+                | aria2c -i- -x16 -c -d ${libraries_root}
         ;;
     extract-natives) # Extracts native libraries into correct location from previous step. 
         version_name="$2"
