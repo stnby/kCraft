@@ -52,7 +52,7 @@ case "$1" in
         jq '.downloads.client.url' "${versions_root}/${version_name}/${version_name}.json" \
             | xargs curl -C- -#o "${versions_root}/${version_name}/${version_name}.jar"
         ;;
-    get-assets) # Downloads game assets requiered for the client.
+    get-assets) # Downloads game assets required for the client.
         version_name="$2"
         [ ! -f "${versions_root}/${version_name}/${version_name}.json" ] && echo 'Such version does not exist' && exit 1
         assets_index_name=`jq -r '.assetIndex.id' "${versions_root}/${version_name}/${version_name}.json"`
@@ -60,10 +60,11 @@ case "$1" in
             | xargs sh -c \
                 "echo \"Downloading: 'assets/indexes/${assets_index_name}.json'\"; curl --create-dirs -C- -#o \"${assets_root}/indexes/${assets_index_name}.json\" \$0"
         jq '.objects[].hash' "${assets_root}/indexes/${assets_index_name}.json" \
-            | xargs -n1 sh -c "printf 'https://resources.download.minecraft.net/%.2s/%s\n\tout=%.2s/%s\n' \$0 \$0 \$0 \$0" \
+            | xargs -n1 sh -c \
+                "printf 'https://resources.download.minecraft.net/%.2s/%s\n\tout=%.2s/%s\n' \$0 \$0 \$0 \$0" \
             | aria2c -i- -x16 -c -d "${assets_root}/objects"
         ;;
-    get-libs) # Downloads libraries requiered for the client.
+    get-libs) # Downloads libraries required for the client.
         version_name="$2"
         [ ! -f "${versions_root}/${version_name}/${version_name}.json" ] && echo 'Such version does not exist' && exit 1
         jq '.libraries[].downloads[] | if has("natives-linux") then ."natives-linux" else if has("url") then . else empty end end | .path, .url' \
@@ -83,7 +84,8 @@ case "$1" in
         version_type=`jq -r '.type' "${versions_root}/${version_name}/${version_name}.json"`
         assets_index_name=`jq -r '.assetIndex.id' "${versions_root}/${version_name}/${version_name}.json"`
         natives_directory="${versions_root}/${version_name}/natives"
-        classpath=`jq -r '.libraries[].downloads[].path // empty' "${versions_root}/${version_name}/${version_name}.json" | xargs -n1 -I% printf "${libraries_root}/%:"; echo "${versions_root}/${version_name}/${version_name}.jar"`
+        classpath=`jq -r '.libraries[].downloads[].path // empty' "${versions_root}/${version_name}/${version_name}.json" \
+            | xargs -n1 -I% printf "${libraries_root}/%:"; echo "${versions_root}/${version_name}/${version_name}.jar"`
         main_class=`jq -r '.mainClass' "${versions_root}/${version_name}/${version_name}.json"`
         java \
             -Xmx2G -Xss1M \
